@@ -11,8 +11,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionConfig {
     @ExceptionHandler(UserCreateFaild.class)
     public ResponseEntity<?> badCreateUser(UserCreateFaild e){
-        ExceptionDTO exceptionDTO = new ExceptionDTO("El usuario no fue creado Correctamente ",404);
+        ExceptionDTO exceptionDTO = new ExceptionDTO("El usuario no fue creado Correctamente ",406);
         return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserUpdateFailed.class)
+    public ResponseEntity<?> badUpdateUser(UserUpdateFailed e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO("El usuario no se actualizo correctamente",406);
+        return new ResponseEntity<>(exceptionDTO,HttpStatus.BAD_REQUEST);
     }
 
 }
