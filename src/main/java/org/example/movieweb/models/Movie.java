@@ -1,12 +1,13 @@
 package org.example.movieweb.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter @Setter
 @AllArgsConstructor
@@ -35,4 +36,6 @@ public class Movie {
     private int No_of_Votes;
     private String Gross;
 
+    @ManyToMany(mappedBy = "movies")
+    private Set<User> users = new HashSet<>();
 }

@@ -1,24 +1,31 @@
 package org.example.movieweb.services.user;
 
-import jakarta.persistence.Id;
-import jakarta.transaction.Transactional;
+import org.example.movieweb.DTO.MovieNameDTO;
 import org.example.movieweb.DTO.UserDTO;
+import org.example.movieweb.DTO.UserSimplifiedlDTO;
+import org.example.movieweb.exceptions.IdNotFound;
+import org.example.movieweb.exceptions.MovieNameNotFound;
 import org.example.movieweb.exceptions.UserCreateFaild;
 import org.example.movieweb.exceptions.UserUpdateFailed;
+import org.example.movieweb.models.Movie;
 import org.example.movieweb.models.User;
+import org.example.movieweb.repositories.IMovieRepository;
 import org.example.movieweb.repositories.IUserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService{
     //Inyeccion de dependencia del repository
     IUserRepository userRepository;
-    public UserService(IUserRepository userRepository){
+    IMovieRepository movieRepository;
+    public UserService(IUserRepository userRepository, IMovieRepository movieRepository){
         this.userRepository = userRepository;
+        this.movieRepository = movieRepository;
     }
 
     //Crear el usuario
@@ -38,15 +45,15 @@ public class UserService implements IUserService{
     }
     //listar los usuarios
     @Override
-    public List<UserDTO> getAllUsers() {
+    public List<UserSimplifiedlDTO> getAllUsers() {
         List<User> users = userRepository.getAll();
-        List<UserDTO> userDTOS = users.stream().map(user-> new UserDTO(user.getUserName(),user.getPassword())).collect(Collectors.toList());
-        return userDTOS;
+        List<UserSimplifiedlDTO> userSimplifiedlDTOS = users.stream().map(user-> new UserSimplifiedlDTO(user.getUserName(),user.getPassword())).collect(Collectors.toList());
+        return userSimplifiedlDTOS;
     }
 
     //actualizar los usuarios
     @Override
-    public String updateUser(User user, Long id) {
+    public String updateUser(UserDTO user, Long id) {
 
         if(user == null){
             throw new UserUpdateFailed("No se encuentra ningun dato");
@@ -68,7 +75,7 @@ public class UserService implements IUserService{
             return message;
 
     }
-
+    //Eliminar un usuario por id
     @Override
     public String deleteUser(Long id) {
         Optional<User> userOptional = userRepository.findById(id);
@@ -79,4 +86,36 @@ public class UserService implements IUserService{
             return "El id "+ id + " no existe";
         }
     }
+    //añadir desde un usuario a la lista de peliculas
+    @Override
+    public String addToListMovie(Long userID, String movieID) {
+
+        User user = userRepository.findById(userID).orElseThrow(() -> new IdNotFound("El id del usuario no se encuentra verifique nuevamente"));
+        Movie movie = movieRepository.findById(movieID).orElseThrow(()-> new MovieNameNotFound("El id de la pelicula no se encuentra verifique nuevamente"));
+
+        Optional<Movie> movie1 = user.getMovies().stream().filter(mov -> mov.getSeries_Title().equals(movie.getSeries_Title())).findFirst();
+        if(movie1.isPresent()){
+            return "La pelicula ya esta añadida a la biblioteca";
+        }else{
+            user.getMovies().add(movie);
+            userRepository.save(user);
+            MovieNameDTO movieNameDTO = new MovieNameDTO(movie.getSeries_Title());
+            String message = "La pelicula " + movieNameDTO.getMovieName() + "fue añadida exitosamente!";
+            return message;
+        }
+    }
+
+    @Override
+    public Set<MovieNameDTO> movieList(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IdNotFound("El id del usuario no se encuentra"));
+        Set<Movie> movieName = user.getMovies();
+
+        Set<MovieNameDTO> movieNameDTOS = movieName.stream().map(mov ->{
+             return new MovieNameDTO(mov.getSeries_Title());
+        }).collect(Collectors.toSet());
+
+        return movieNameDTOS;
+    }
+
+
 }

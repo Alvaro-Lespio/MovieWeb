@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,4 +24,12 @@ public class User {
     private String lastName;
     private String userName;
     private String password;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_movies",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "movie_id")
+    )
+    private Set<Movie> movies = new HashSet<>();
 }

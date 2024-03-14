@@ -1,8 +1,8 @@
 package org.example.movieweb.controllers;
 
-import org.apache.catalina.LifecycleState;
-import org.apache.tomcat.util.http.parser.HttpParser;
+import org.example.movieweb.DTO.MovieNameDTO;
 import org.example.movieweb.DTO.UserDTO;
+import org.example.movieweb.DTO.UserSimplifiedlDTO;
 import org.example.movieweb.models.User;
 import org.example.movieweb.services.user.IUserService;
 import org.example.movieweb.services.user.UserService;
@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class UserController {
@@ -29,14 +30,14 @@ public class UserController {
 
     //listar usuarios
     @GetMapping("/ListUsers")
-    public ResponseEntity<List<UserDTO>> listUser(){
+    public ResponseEntity<List<UserSimplifiedlDTO>> listUser(){
         return new ResponseEntity<>(userService.getAllUsers(),HttpStatus.OK);
     }
 
     //Actualizar usuarios por id
     @PutMapping("/UpdateUsers/{id}")
-    public ResponseEntity<String> updateUser(@RequestBody User user, @PathVariable Long id){
-        return new ResponseEntity<>(userService.updateUser(user,id),HttpStatus.OK);
+    public ResponseEntity<String> updateUser(@RequestBody UserDTO userDTO, @PathVariable Long id){
+        return new ResponseEntity<>(userService.updateUser(userDTO,id),HttpStatus.OK);
     }
 
     //Eliminar usuario por id
@@ -45,4 +46,15 @@ public class UserController {
         return new ResponseEntity<>(userService.deleteUser(id),HttpStatus.OK);
     }
 
+    //Agregar Peliculas a la biblioteca
+    @PostMapping("/addToMovieList/{userId}/movie/")
+    public ResponseEntity<String> addToMovieList(@PathVariable Long userId, @RequestParam("name") String movieId){
+        return new ResponseEntity<>(userService.addToListMovie(userId,movieId),HttpStatus.OK);
+    }
+
+    //Mostrar biblioteca de peliculas
+    @GetMapping("/MovieList/{userId}")
+    public ResponseEntity<Set<MovieNameDTO>> movieList(@PathVariable Long userId){
+        return new ResponseEntity<>(userService.movieList(userId),HttpStatus.OK);
+    }
 }

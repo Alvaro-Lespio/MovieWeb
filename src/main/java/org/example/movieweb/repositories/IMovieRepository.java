@@ -20,4 +20,5 @@ public interface IMovieRepository extends JpaRepository<Movie,String> {
 
     @Query("FROM Movie mo WHERE mo.Released_Year = :date")
     List<Movie> findByDate(int date);
+
 }
