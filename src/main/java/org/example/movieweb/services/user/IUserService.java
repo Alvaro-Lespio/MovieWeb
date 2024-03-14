@@ -8,5 +8,6 @@ import java.util.List;
 public interface IUserService {
     String createUsers(User user);
     List<UserDTO> getAllUsers();
-    UserDTO updateUser(User user);
+    String updateUser(User user, Long id);
+    String deleteUser(Long id);
 }

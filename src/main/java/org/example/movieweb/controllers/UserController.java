@@ -1,6 +1,7 @@
 package org.example.movieweb.controllers;
 
 import org.apache.catalina.LifecycleState;
+import org.apache.tomcat.util.http.parser.HttpParser;
 import org.example.movieweb.DTO.UserDTO;
 import org.example.movieweb.models.User;
 import org.example.movieweb.services.user.IUserService;
@@ -25,15 +26,23 @@ public class UserController {
     public ResponseEntity<String> createUser(@RequestBody User user){
         return new ResponseEntity<>(userService.createUsers(user),HttpStatus.OK);
     }
+
     //listar usuarios
     @GetMapping("/ListUsers")
     public ResponseEntity<List<UserDTO>> listUser(){
         return new ResponseEntity<>(userService.getAllUsers(),HttpStatus.OK);
     }
-    //Actualizar usuarios
-    @PutMapping("/updateUsers")
-    public ResponseEntity<UserDTO> updateUser(@RequestBody User user){
-        return new ResponseEntity<>(HttpStatus.OK);
+
+    //Actualizar usuarios por id
+    @PutMapping("/UpdateUsers/{id}")
+    public ResponseEntity<String> updateUser(@RequestBody User user, @PathVariable Long id){
+        return new ResponseEntity<>(userService.updateUser(user,id),HttpStatus.OK);
+    }
+
+    //Eliminar usuario por id
+    @DeleteMapping("/DeleteUser/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id){
+        return new ResponseEntity<>(userService.deleteUser(id),HttpStatus.OK);
     }
 
 }

@@ -1,5 +1,6 @@
 package org.example.movieweb.services.user;
 
+import jakarta.persistence.Id;
 import jakarta.transaction.Transactional;
 import org.example.movieweb.DTO.UserDTO;
 import org.example.movieweb.exceptions.UserCreateFaild;
@@ -9,6 +10,7 @@ import org.example.movieweb.repositories.IUserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +29,9 @@ public class UserService implements IUserService{
             throw new UserCreateFaild("El usuario es incorrecto verifique los campos");
         }else if(user.getUserName() == null || user.getName() == null || user.getEmail() == null || user.getLastName() == null || user.getPassword() == null){
             throw new UserCreateFaild("El usuario es incorrecto verifique alguno de sus campos");
-        }else{
+        }else if(user.getUserName().isBlank() || user.getName().isBlank() || user.getEmail().isBlank() || user.getLastName().isBlank() || user.getPassword().isBlank()){
+            throw new UserCreateFaild("los datos del usuario estan incompletos");
+        }else {
             userRepository.save(user);
             return "El usuario se creo correctamente";
         }
@@ -40,19 +44,39 @@ public class UserService implements IUserService{
         return userDTOS;
     }
 
+    //actualizar los usuarios
     @Override
-    public UserDTO updateUser(User user) {
+    public String updateUser(User user, Long id) {
+
         if(user == null){
             throw new UserUpdateFailed("No se encuentra ningun dato");
         }else if(user.getUserName() == null || user.getName() == null || user.getEmail() == null || user.getLastName() == null || user.getPassword() == null){
             throw new UserUpdateFailed("Verifique sus datos, son incorrectos");
-        }else{
-
+        }else if(user.getUserName().isBlank() || user.getName().isBlank() || user.getEmail().isBlank() || user.getLastName().isBlank() || user.getPassword().isBlank()){
+            throw new UserUpdateFailed("Verifique sus datos, son incompletos");
         }
+            String message = userRepository.findById(id).map(us ->{
+                us.setUserName(user.getUserName());
+                us.setName(user.getName());
+                us.setEmail(user.getEmail());
+                us.setPassword(user.getPassword());
+                us.setLastName(user.getLastName());
+                userRepository.save(us);
+                return "El usuario se actualizo correctamente";
+            }).orElse("El id "+ id + "no existe");
 
-        return null;
+            return message;
+
     }
 
-    //actualizar los usuarios
-
+    @Override
+    public String deleteUser(Long id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if(userOptional.isPresent()){
+            userRepository.deleteById(id);
+            return "El Usuario se elimino correctamente";
+        }else {
+            return "El id "+ id + " no existe";
+        }
+    }
 }
