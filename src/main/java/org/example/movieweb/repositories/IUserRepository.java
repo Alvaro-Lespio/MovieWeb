@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface IUserRepository extends JpaRepository<User,Long> {
+    //Creamos mediante HQL una consulta personaliazada para que desde la base de datos nos traiga todos los usuarios
     @Query("FROM User")
     List<User> getAll();
 

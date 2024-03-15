@@ -7,7 +7,6 @@ import org.example.movieweb.models.User;
 
 import java.util.List;
 import java.util.Set;
-
 public interface IUserService {
     String createUsers(User user);
     List<UserSimplifiedlDTO> getAllUsers();

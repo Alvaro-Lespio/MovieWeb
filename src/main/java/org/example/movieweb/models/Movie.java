@@ -8,13 +8,13 @@ import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
-
+//Entidad Movie
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
 @Entity
-@Table(name = "imdb_top_1000")
+@Table(name = "imdb_top_1000") //Nombre de la tabla en la base de datos
 public class Movie {
     private String Poster_Link;
 
@@ -36,6 +36,9 @@ public class Movie {
     private int No_of_Votes;
     private String Gross;
 
-    @ManyToMany(mappedBy = "movies")
-    private Set<User> users = new HashSet<>();
+    @ManyToMany(mappedBy = "movies") //relacion muchos a muchos pero del lado de movie, que va a estar mapeado por el set
+                                     //asignado en user.
+
+    private Set<User> users = new HashSet<>();//Esto hace referencia a que vamos a tener un set de usuarios pero cada
+                                              //set de movie va a tener el su propio usuario
 }

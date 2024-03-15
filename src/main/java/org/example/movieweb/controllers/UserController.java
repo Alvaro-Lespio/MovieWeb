@@ -25,6 +25,7 @@ public class UserController {
     //Crear un usuario
     @PostMapping("/user")
     public ResponseEntity<String> createUser(@RequestBody User user) {
+        //Vamos a retornar un mensaje que se le asgina en el service y el estado HTTP OK
         return new ResponseEntity<>(userService.createUsers(user),HttpStatus.OK);
     }
 
