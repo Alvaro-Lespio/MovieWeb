@@ -20,22 +20,22 @@ public class MovieController {
     }
 
     //Traer todas las peliculas
-    @GetMapping("/AllMovies")
+    @GetMapping("/movies")
     public ResponseEntity<List<MovieDTO>> allMovies(){
         return new ResponseEntity<>(movieService.getAllMovies(), HttpStatus.OK);
     }
     //Traer las peliculas relacionadas con los titulos que ingrese el usuario,
     // si el usuario ingresa star le van a aparecer todas las peliculas de star wars
-    @GetMapping("/Title/{title}")
+    @GetMapping("/movies-tittle/{title}")
     public ResponseEntity<List<MovieDTO>> movieTitle(@PathVariable String title){
         return new ResponseEntity<>(movieService.getMovieByTitle(title),HttpStatus.OK);
     }
     //Traer todas las peliculas de un director
-    @GetMapping("/Director/{director}")
+    @GetMapping("/movies-director/{director}")
     public ResponseEntity<List<MovieDTO>> movieDirector(@PathVariable String director){
         return new ResponseEntity<>(movieService.getMovieByDirector(director),HttpStatus.OK);
     }
-    @GetMapping("/Date/{date}")
+    @GetMapping("/movies-date/{date}")
     public ResponseEntity<List<MovieDTO>> movieDate(@PathVariable int date){
         return new ResponseEntity<>(movieService.getMovieByDate(date),HttpStatus.OK);
     }

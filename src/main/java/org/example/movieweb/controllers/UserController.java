@@ -23,37 +23,37 @@ public class UserController {
     }
 
     //Crear un usuario
-    @PostMapping("/Create")
-    public ResponseEntity<String> createUser(@RequestBody User user){
+    @PostMapping("/user")
+    public ResponseEntity<String> createUser(@RequestBody User user) {
         return new ResponseEntity<>(userService.createUsers(user),HttpStatus.OK);
     }
 
     //listar usuarios
-    @GetMapping("/ListUsers")
+    @GetMapping("/user")
     public ResponseEntity<List<UserSimplifiedlDTO>> listUser(){
         return new ResponseEntity<>(userService.getAllUsers(),HttpStatus.OK);
     }
 
     //Actualizar usuarios por id
-    @PutMapping("/UpdateUsers/{id}")
+    @PutMapping("/user/{id}")
     public ResponseEntity<String> updateUser(@RequestBody UserDTO userDTO, @PathVariable Long id){
         return new ResponseEntity<>(userService.updateUser(userDTO,id),HttpStatus.OK);
     }
 
     //Eliminar usuario por id
-    @DeleteMapping("/DeleteUser/{id}")
+    @DeleteMapping("/user/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id){
         return new ResponseEntity<>(userService.deleteUser(id),HttpStatus.OK);
     }
 
     //Agregar Peliculas a la biblioteca
-    @PostMapping("/addToMovieList/{userId}/movie/")
+    @PostMapping("/add-to-movie-list/{userId}/movie/")
     public ResponseEntity<String> addToMovieList(@PathVariable Long userId, @RequestParam("name") String movieId){
         return new ResponseEntity<>(userService.addToListMovie(userId,movieId),HttpStatus.OK);
     }
 
     //Mostrar biblioteca de peliculas
-    @GetMapping("/MovieList/{userId}")
+    @GetMapping("/movie/{userId}")
     public ResponseEntity<Set<MovieNameDTO>> movieList(@PathVariable Long userId){
         return new ResponseEntity<>(userService.movieList(userId),HttpStatus.OK);
     }
