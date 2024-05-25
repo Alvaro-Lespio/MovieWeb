@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 //Esta clase es un DTO de movie el cual solamente muestra el usuario y la contraseña. Esto lo hacemos para que no
 // se muestre informacion extra al cliente
-public class UserSimplifiedlDTO {
+public class UserLoginDto {
     private String userName;
     private String password;
 }

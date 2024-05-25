@@ -2,7 +2,7 @@ package org.example.movieweb.services.user;
 
 import org.example.movieweb.DTO.MovieNameDTO;
 import org.example.movieweb.DTO.UserDTO;
-import org.example.movieweb.DTO.UserSimplifiedlDTO;
+import org.example.movieweb.DTO.UserLoginDto;
 import org.example.movieweb.exceptions.IdNotFound;
 import org.example.movieweb.exceptions.MovieNameNotFound;
 import org.example.movieweb.exceptions.UserCreateFaild;
@@ -16,12 +16,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService{
-    //Inyeccion de dependencia del repository y del service de movie
+
+    //Inyeccion de dependencia del repository y del repository de movie
     IUserRepository userRepository;
+
     IMovieRepository movieRepository;
     public UserService(IUserRepository userRepository, IMovieRepository movieRepository){
         this.userRepository = userRepository;
@@ -30,9 +33,11 @@ public class UserService implements IUserService{
 
     //Crear el usuario
     @Override
-    public String createUsers(User user) {
-        String mensaje = "El usuario se creo correctamente";
+    public String createUsers(UserDTO user) {
 
+
+        String mensaje = "El usuario se creo correctamente";
+        User u = new User();
         //verificamos que el usuario que nos llega por parametro no sea nullo, en caso de que lo sea intentamos lanzar una nueva
         //Excepcion personalizada
         if(user == null){
@@ -51,20 +56,27 @@ public class UserService implements IUserService{
 
             //en el caso de que este bien, se guarda en la base de datos, mediante el metodo save de JPA repository
             //y le pasamos el objeto, y retornamos un mensaje de que salio correctamente
-            userRepository.save(user);
+
+                u.setUserName(user.getUserName());
+                u.setPassword(user.getPassword());
+                u.setEmail(user.getEmail());
+                u.setLastName(user.getLastName());
+                u.setName(user.getName());
+                userRepository.save(u);
+
             return mensaje;
         }
     }
     //listar los usuarios
     @Override
-    public List<UserSimplifiedlDTO> getAllUsers() {
+    public List<UserLoginDto> getAllUsers() {
         //Accedemos a todos los usuarios de nuestra base de datos mediante el metodo getAll,que en este caso es una consulta HQL
         //desde el repositorio de usuario y los guardamos dentro de una lista, a esa lista la recorremos y convertimos los datos
         //En DTO, ya que el dto de usuario contiene solamente el usuario y la contraseña. A este mismo lo almacenamos
         //dentro de una lista dto, y retornamos esa lista creada.
         List<User> users = userRepository.getAll();
-        List<UserSimplifiedlDTO> userSimplifiedlDTOS = users.stream().map(user-> new UserSimplifiedlDTO(user.getUserName(),user.getPassword())).collect(Collectors.toList());
-        return userSimplifiedlDTOS;
+        List<UserLoginDto> userLoginDtos = users.stream().map(user-> new UserLoginDto(user.getUserName(),user.getPassword())).collect(Collectors.toList());
+        return userLoginDtos;
     }
 
     //actualizar los usuarios
@@ -118,30 +130,22 @@ public class UserService implements IUserService{
     }
     //añadir desde un usuario a la lista de peliculas
     @Override
-    public String addToListMovie(Long userID, String movieID) {
+    public String addToListMovie(Long userID, String movieName) {
         //En este caso cada usuario tiene su lista de peliculas, primero buscamos un usuario por id, mediante el metodo
         // buscar por id del usuario propio de jpa, y el valor que retorne lo guardamos en una variable del tipo user,
         //luego hacemos lo mismo con movie,pero con su repositorio, y lo que retorne lo va a almacenar en una variable
-        //de tipo movie.En caso de que no se encuentre el id se intenta lanzar un error personalziado.
+        //de tipo movie.En caso de que no se encuentre el nombre se intenta lanzar un error personalziado.
 
-        String message = "La pelicula ya esta añadida a la biblioteca";
+        String message;
+
+        System.out.println(movieName);
         User user = userRepository.findById(userID).orElseThrow(() -> new IdNotFound("El id del usuario no se encuentra verifique nuevamente"));
-        Movie movie = movieRepository.findById(movieID).orElseThrow(()-> new MovieNameNotFound("El id de la pelicula no se encuentra verifique nuevamente"));
+        //Movie movie = movieRepository.findByTitle(movieName).stream().findFirst().orElseThrow(() -> new MovieNameNotFound("El título de la película no se encuentra"));
+        Movie movie = movieRepository.findByTitle(movieName).stream().findFirst().orElseThrow(() -> new MovieNameNotFound("El titulo de la pelicula no existe"));
 
-        //recorremos el usuario especificamente la variable que conteine la relacion muchos a muchos y buscamos la pelicula
-        //dentro de la biblioteca del usuario, y nos va a retornar un valor de tipo Optional, por ende lo guardamos dentro
-        //de una variable de ese tipo.
-        Optional<Movie> movie1 = user.getMovies().stream().filter(mov -> mov.getSeries_Title().equals(movie.getSeries_Title())).findFirst();
-
-        //verificamos si la variable movei1 esta presente o no, en caso de que este presente significa que ya exisitia en la
-        //biblioteca, en caso de que no este presente, lo guardamos en la base de datos y le asginamos el valor a un dto.
-        if(movie1.isPresent()) {
-            return message;
-        }
             user.getMovies().add(movie);
             userRepository.save(user);
-            MovieNameDTO movieNameDTO = new MovieNameDTO(movie.getSeries_Title());
-            message = "La pelicula " + movieNameDTO.getMovieName() + "fue añadida exitosamente!";
+            message = "La pelicula " + movieName + " fue añadida exitosamente!";
             return message;
 
     }

@@ -40,6 +40,7 @@ public class MovieService implements IMovieService {
         //a la funcion creada en esta clase que lo que hace dicha funcion es convertir en movieDTO una lista de objetos movie
         //almacenamos ese valor que retorna la funcion en una variable llamada movieDTOS y la retornamos
         List<Movie> movies = movieRepository.findByTitle(title);
+        System.out.println(movies.size());
         List<MovieDTO> movieDTOS = returnMoviesDto(movies);
         return movieDTOS;
     }

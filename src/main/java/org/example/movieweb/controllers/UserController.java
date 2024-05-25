@@ -2,10 +2,9 @@ package org.example.movieweb.controllers;
 
 import org.example.movieweb.DTO.MovieNameDTO;
 import org.example.movieweb.DTO.UserDTO;
-import org.example.movieweb.DTO.UserSimplifiedlDTO;
+import org.example.movieweb.DTO.UserLoginDto;
 import org.example.movieweb.models.User;
 import org.example.movieweb.services.user.IUserService;
-import org.example.movieweb.services.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,24 +13,25 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
+@RequestMapping("/api")
 public class UserController {
-    //Inyeccion de dependecia del service
-    IUserService userService;
+    //Inyeccion de dependecia meidante la interfaz IUserService
+    private IUserService userService;
 
-    public UserController(UserService userService){
+    public UserController(IUserService userService){
         this.userService = userService;
     }
 
     //Crear un usuario
     @PostMapping("/user")
-    public ResponseEntity<String> createUser(@RequestBody User user) {
+    public ResponseEntity<String> createUser(@RequestBody UserDTO user) {
         //Vamos a retornar un mensaje que se le asgina en el service y el estado HTTP OK
         return new ResponseEntity<>(userService.createUsers(user),HttpStatus.OK);
     }
 
     //listar usuarios
     @GetMapping("/user")
-    public ResponseEntity<List<UserSimplifiedlDTO>> listUser(){
+    public ResponseEntity<List<UserLoginDto>> listUser(){
         return new ResponseEntity<>(userService.getAllUsers(),HttpStatus.OK);
     }
 
@@ -48,13 +48,13 @@ public class UserController {
     }
 
     //Agregar Peliculas a la biblioteca
-    @PostMapping("/add-to-movie-list/{userId}/movie/")
-    public ResponseEntity<String> addToMovieList(@PathVariable Long userId, @RequestParam("name") String movieId){
-        return new ResponseEntity<>(userService.addToListMovie(userId,movieId),HttpStatus.OK);
+    @PostMapping("/movie-list/{userId}/{movie}")
+    public ResponseEntity<String> addToMovieList(@PathVariable Long userId, @PathVariable String movie){
+            return new ResponseEntity<>(userService.addToListMovie(userId, movie), HttpStatus.OK);
     }
 
     //Mostrar biblioteca de peliculas
-    @GetMapping("/movie/{userId}")
+    @GetMapping("/movie-list/{userId}")
     public ResponseEntity<Set<MovieNameDTO>> movieList(@PathVariable Long userId){
         return new ResponseEntity<>(userService.movieList(userId),HttpStatus.OK);
     }

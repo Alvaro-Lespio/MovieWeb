@@ -7,6 +7,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface IMovieRepository extends JpaRepository<Movie,String> {
     //Creamos mediante HQL una consulta personaliazada para que desde la base de datos nos traiga todas las peliculas
@@ -28,4 +30,6 @@ public interface IMovieRepository extends JpaRepository<Movie,String> {
     @Query("FROM Movie mo WHERE mo.Released_Year = :date")
     List<Movie> findByDate(int date);
 
+    @Query("SELECT m FROM Movie m WHERE m.Series_Title = :title")
+    Movie findMovieByExactTitle(@Param("title") String title);
 }
