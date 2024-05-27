@@ -3,10 +3,10 @@ package org.example.movieweb.services.user;
 import org.example.movieweb.DTO.MovieNameDTO;
 import org.example.movieweb.DTO.UserDTO;
 import org.example.movieweb.DTO.UserLoginDto;
-import org.example.movieweb.exceptions.IdNotFound;
-import org.example.movieweb.exceptions.MovieNameNotFound;
-import org.example.movieweb.exceptions.UserCreateFaild;
-import org.example.movieweb.exceptions.UserUpdateFailed;
+import org.example.movieweb.exceptions.IdNotFoundException;
+import org.example.movieweb.exceptions.MovieNameNotFoundException;
+import org.example.movieweb.exceptions.UserCreateFaildException;
+import org.example.movieweb.exceptions.UserUpdateFailedException;
 import org.example.movieweb.models.Movie;
 import org.example.movieweb.models.User;
 import org.example.movieweb.repositories.IMovieRepository;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,17 +40,17 @@ public class UserService implements IUserService{
         //verificamos que el usuario que nos llega por parametro no sea nullo, en caso de que lo sea intentamos lanzar una nueva
         //Excepcion personalizada
         if(user == null){
-            throw new UserCreateFaild("El usuario es nulo");
+            throw new UserCreateFaildException("El usuario es nulo");
         }else if(user.getUserName() == null || user.getName() == null || user.getEmail() == null || user.getLastName() == null || user.getPassword() == null){
 
             //Verificamos que ninguno de los atributos del objeto sean nulos, en caso de que lo sea alguno, lanzamos una excepcion
             //personalizada
-            throw new UserCreateFaild("El usuario es incorrecto verifique alguno de sus campos");
+            throw new UserCreateFaildException("El usuario es incorrecto verifique alguno de sus campos");
         }else if(user.getUserName().isBlank() || user.getName().isBlank() || user.getEmail().isBlank() || user.getLastName().isBlank() || user.getPassword().isBlank()){
 
             //Verificamos que nignuno de los atributos del objeto esten en blanco, en caso de que contenga algun atributo en blanco
             //se lanza una excepcion personalizada
-            throw new UserCreateFaild("los datos del usuario estan incompletos");
+            throw new UserCreateFaildException("los datos del usuario estan incompletos");
         }else {
 
             //en el caso de que este bien, se guarda en la base de datos, mediante el metodo save de JPA repository
@@ -85,15 +84,15 @@ public class UserService implements IUserService{
         //Verificamos que ninguno de los atributos del objeto sean nulos, en caso de que lo sea alguno, lanzamos una excepcion
         //personalizada
         if(user == null){
-            throw new UserUpdateFailed("No se encuentra ningun dato");
+            throw new UserUpdateFailedException("No se encuentra ningun dato");
         }else if(user.getUserName() == null || user.getName() == null || user.getEmail() == null || user.getLastName() == null || user.getPassword() == null){
             //Verificamos que ninguno de los atributos del objeto sean nulos, en caso de que lo sea alguno, lanzamos una excepcion
             //personalizada
-            throw new UserUpdateFailed("Verifique sus datos, son incorrectos");
+            throw new UserUpdateFailedException("Verifique sus datos, son incorrectos");
         }else if(user.getUserName().isBlank() || user.getName().isBlank() || user.getEmail().isBlank() || user.getLastName().isBlank() || user.getPassword().isBlank()){
             //Verificamos que nignuno de los atributos del objeto esten en blanco, en caso de que contenga algun atributo en blanco
             //se lanza una excepcion personalizada
-            throw new UserUpdateFailed("Verifique sus datos, son incompletos");
+            throw new UserUpdateFailedException("Verifique sus datos, son incompletos");
         }
             //En caso de que este bien el usuario, vamos a buscar al usuario mediante su id
             //luego vamos a utilizar buscar por id del propio jpa y vamos a settear o actualizar
@@ -139,9 +138,9 @@ public class UserService implements IUserService{
         String message;
 
         System.out.println(movieName);
-        User user = userRepository.findById(userID).orElseThrow(() -> new IdNotFound("El id del usuario no se encuentra verifique nuevamente"));
+        User user = userRepository.findById(userID).orElseThrow(() -> new IdNotFoundException("El id del usuario no se encuentra verifique nuevamente"));
         //Movie movie = movieRepository.findByTitle(movieName).stream().findFirst().orElseThrow(() -> new MovieNameNotFound("El título de la película no se encuentra"));
-        Movie movie = movieRepository.findByTitle(movieName).stream().findFirst().orElseThrow(() -> new MovieNameNotFound("El titulo de la pelicula no existe"));
+        Movie movie = movieRepository.findByTitle(movieName).stream().findFirst().orElseThrow(() -> new MovieNameNotFoundException("El titulo de la pelicula no existe"));
 
             user.getMovies().add(movie);
             userRepository.save(user);
@@ -156,7 +155,7 @@ public class UserService implements IUserService{
         //Buscamos el usuario por id mediante el metodo busacar por id propio de jpa, en caso de que no este ese id
         //mostramos un error personalizado y en caso de que lo encuentre lo guardamos dentro de un Set de movie, y le
         //asignamos la biblioteca del usuario
-        User user = userRepository.findById(userId).orElseThrow(() -> new IdNotFound("El id del usuario no se encuentra"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IdNotFoundException("El id del usuario no se encuentra"));
         Set<Movie> movieName = user.getMovies();
 
         //Convertimos set movie a un set de movie dto el cual solo tiene como atributo el nombre de la pelicula y lo

@@ -11,25 +11,23 @@ import java.util.Optional;
 
 @Repository
 public interface IMovieRepository extends JpaRepository<Movie,String> {
-    //Creamos mediante HQL una consulta personaliazada para que desde la base de datos nos traiga todas las peliculas
+    //Creamos mediante JPQL una consulta personaliazada para que desde la base de datos nos traiga todas las peliculas
     @Query("FROM Movie")
     List<Movie> findAllMovies();
 
-    //Creamos mediante HQL una consulta personaliazada para que desde la base de datos nos traiga todos los titulos relacionados
+    //Creamos mediante JPQL una consulta personaliazada para que desde la base de datos nos traiga todos los titulos relacionados
     //enviados por el usuario.
     @Query("FROM Movie movie WHERE movie.Series_Title LIKE %:title%")
     List<Movie> findByTitle(@Param("title")String title);
 
-    //Creamos mediante HQL una consulta personaliazada para que desde la base de datos nos traiga todos los directores relacionados
+    //Creamos mediante JPQL una consulta personaliazada para que desde la base de datos nos traiga todos los directores relacionados
     //enviados por el usuario.
     @Query("FROM Movie m WHERE m.Director LIKE %:director%")
     List<Movie> findByDirector(@Param("director")String director);
 
-    //Creamos mediante HQL una consulta personaliazada para que desde la base de datos nos traiga todas las fechas relacionados
+    //Creamos mediante JPQL una consulta personaliazada para que desde la base de datos nos traiga todas las fechas relacionados
     //enviados por el usuario.
     @Query("FROM Movie mo WHERE mo.Released_Year = :date")
     List<Movie> findByDate(int date);
 
-    @Query("SELECT m FROM Movie m WHERE m.Series_Title = :title")
-    Movie findMovieByExactTitle(@Param("title") String title);
 }

@@ -34,11 +34,13 @@ public class MovieController {
     public ResponseEntity<List<MovieDTO>> movieTitle(@PathVariable String title){
         return new ResponseEntity<>(movieService.getMovieByTitle(title),HttpStatus.OK);
     }
+
     //listar todas las peliculas de un director o directores que contengan el nombre recibido por parametro
     @GetMapping("/movies-director/{director}")
     public ResponseEntity<List<MovieDTO>> movieDirector(@PathVariable String director){
         return new ResponseEntity<>(movieService.getMovieByDirector(director),HttpStatus.OK);
     }
+
     //listar todas las peliculas de un año en especifico.
     @GetMapping("/movies-date/{date}")
     public ResponseEntity<List<MovieDTO>> movieDate(@PathVariable int date){
